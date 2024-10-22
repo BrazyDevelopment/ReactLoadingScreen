@@ -5,25 +5,25 @@ import { Volume2, VolumeX, Play, Pause } from 'lucide-react';
 import { LiveAudioVisualizer } from 'react-audio-visualize';
 import { nuiCallback } from '../lib/nuiCallback';
 // Import assets using Vite's asset handling
-import song1 from '@/assets/song1.mp3';
-import song2 from '@/assets/song2.mp3';
-import song3 from '@/assets/song3.mp3';
+import song1 from '/assets/song1.mp3';
+import song2 from '/assets/song2.mp3';
+import song3 from '/assets/song3.mp3';
 
-import logo from '../assets/TMF.svg';
-import rectangle218 from '../assets/Rectangle 218.svg';
-import ellipse9 from '../assets/Ellipse 9.svg';
-import rectangle212 from '../assets/Rectangle 212.svg';
-import playIcon from '../assets/PlayIcon.svg';
-import group39 from '../assets/Group 39.svg';
-import discordIcon from '../assets/discord.svg';
-import tiktokIcon from '../assets/tiktok.svg';
-import storeIcon from '../assets/store.svg';
-import tmf2Logo from '../assets/TMF2.svg';
-import previousIcon from '../assets/previous.svg';
-import rectangle1353 from '../assets/Rectangle 1353.svg';
-import nextSongIcon from '../assets/nextsong.svg';
+import logo from '/assets/tmf.svg';
+import tmf2Logo from '/assets/tmf2.svg';
+import rectangle218 from '/assets/Rectangle 218.svg';
+import ellipse9 from '/assets/Ellipse 9.svg';
+import rectangle212 from '/assets/Rectangle 212.svg';
+import playIcon from '/assets/PlayIcon.svg';
+import group39 from '/assets/Group 39.svg';
+import discordIcon from '/assets/discord.svg';
+import tiktokIcon from '/assets/tiktok.svg';
+import storeIcon from '/assets/store.svg';
+import previousIcon from '/assets/previous.svg';
+import rectangle1353 from '/assets/Rectangle 1353.svg';
+import nextSongIcon from '/assets/nextsong.svg';
 
-import videoSource from '@/assets/video.mp4';
+import videoSource from '/assets/video.mp4';
 
 
 const SONGS = [song1, song2, song3];
