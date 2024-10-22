@@ -11,16 +11,16 @@ import song3 from '/assets/song3.mp3';
 
 import logo from '/assets/tmf.svg';
 import tmf2Logo from '/assets/tmf2.svg';
-import rectangle218 from '/assets/Rectangle 218.svg';
-import ellipse9 from '/assets/Ellipse 9.svg';
-import rectangle212 from '/assets/Rectangle 212.svg';
+import rectangle218 from '/assets/Rectangle218.svg';
+import ellipse9 from '/assets/Ellipse9.svg';
+import rectangle212 from '/assets/Rectangle212.svg';
 import playIcon from '/assets/PlayIcon.svg';
-import group39 from '/assets/Group 39.svg';
+import group39 from '/assets/Group39.svg';
 import discordIcon from '/assets/discord.svg';
 import tiktokIcon from '/assets/tiktok.svg';
 import storeIcon from '/assets/store.svg';
 import previousIcon from '/assets/previous.svg';
-import rectangle1353 from '/assets/Rectangle 1353.svg';
+import rectangle1353 from '/assets/Rectangle1353.svg';
 import nextSongIcon from '/assets/nextsong.svg';
 
 import videoSource from '/assets/video.mp4';
