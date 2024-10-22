@@ -2,9 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig({
+export default defineConfig(({command}) => ({
   plugins: [react()],
-  base: './',
+  base: command === "build" ? "nui://tmf-loadingscreen/web/dist/" : "/",
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src', import.meta.url),
@@ -16,4 +16,4 @@ export default defineConfig({
     emptyOutDir: true,
   },
 
-});
+}));
