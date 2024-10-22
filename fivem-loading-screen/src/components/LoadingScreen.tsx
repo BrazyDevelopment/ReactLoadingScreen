@@ -23,7 +23,7 @@ import previousIcon from '/assets/previous.svg';
 import rectangle1353 from '/assets/Rectangle1353.svg';
 import nextSongIcon from '/assets/nextsong.svg';
 
-import videoSource from '/assets/video.mp4';
+import imageBackground from '/assets/background-image.png';
 
 
 const SONGS = [song1, song2, song3];
@@ -195,14 +195,15 @@ const LoadingScreen: React.FC = () => {
       onTransitionEnd={() => !isVisible && handleFadeOutComplete()}
     >
       <div className="absolute inset-0">
-        <video
+      {/* <video
           ref={videoRef}
           src={videoSource}
           muted
           loop
           playsInline
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
-        />
+        /> */}
+        <img src={imageBackground} alt="Main Image" />
       </div>
       <div className="relative z-10 h-full flex flex-col justify-between p-8 bg-black bg-opacity-50">
         <Header username={username} volume={audioState.volume} onVolumeChange={handleVolumeChange} onMuteToggle={toggleMute} />
