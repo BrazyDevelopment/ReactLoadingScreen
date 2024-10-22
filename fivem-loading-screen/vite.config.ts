@@ -1,14 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
-import { fileURLToPath, URL } from 'node:url'
+import path from 'path';
 
 export default defineConfig({
   plugins: [react(), svgr()],
   base: './',
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': path.resolve(__dirname, './src', import.meta.url),
     },
   },
   build: {
@@ -23,6 +23,11 @@ export default defineConfig({
     },
     sourcemap: false,
     emptyOutDir: true,
+  },
+  css: {
+    modules: {
+      generateScopedName: '[name]__[local]___[hash:base64:5]',
+    },
   },
   // Server configuration if needed
   server: {
