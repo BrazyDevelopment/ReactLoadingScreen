@@ -12,8 +12,15 @@ export default defineConfig(({command}) => ({
   },
   build: {
     outDir: '../tmf-loadingscreen/web/dist',
-    sourcemap: true,
+    // sourcemap: true,
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: `assets/[name][extname]`,
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+      },
+    },
   },
 
 }));

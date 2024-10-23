@@ -8,12 +8,14 @@
     "deploy": "npm run build && xcopy /s /y public\\assets ..\\tmf-loadingscreen\\web\\assets\\"
   },
   "dependencies": {
+    "@iconify/react": "^5.0.2",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-slider": "^1.2.1",
     "@reduxjs/toolkit": "^2.3.0",
     "@vitejs/plugin-react": "^4.3.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "iconify": "^1.4.0",
     "lucide-react": "^0.453.0",
     "react": "^18.3.1",
     "react-audio-visualize": "^1.2.0",
