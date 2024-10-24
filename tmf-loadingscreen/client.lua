@@ -1,6 +1,16 @@
+local function registerLoadingscreenShutdown()
+    repeat
+        Wait(250) 
+    until NetworkIsSessionActive()
+
+    ShutdownLoadingScreen()
+    ShutdownLoadingScreenNui()
+    logger:Info("Loadingscreen", "Loading screen has been shutdown")
+end
+
 RegisterNUICallback('loadingScreenDone', function(data, cb)
-    ShutdownLoadingScreen() 
-    SetNuiFocus(false, false)   
+    SetNuiFocus(false, false)
+    registerLoadingscreenShutdown()
     cb('ok')
 end)
 
@@ -12,13 +22,13 @@ end)
 
 AddEventHandler('endInitFunction', function()
     SendNUIMessage({ type = "loadingComplete" })
-    ShutdownLoadingScreenNui() 
     SetNuiFocus(false, false)   
 end)
 
-AddEventHandler('playerConnecting', function(_, _, deferrals)
-    local source = source
-    deferrals.handover({
-        name = GetPlayerName(source)
+RegisterNetEvent('sendPlayerName')
+AddEventHandler('sendPlayerName', function(playerName)
+    SendNUIMessage({
+        type = "setPlayerName",
+        name = playerName
     })
 end)

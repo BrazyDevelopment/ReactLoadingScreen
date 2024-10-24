@@ -65,6 +65,10 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
         const handleMessage = (event: MessageEvent) => {
             const data = event.data;
 
+            if (data.type === 'setPlayerName') {
+              setUsername(data.name);
+            }
+
             if (data.eventName === 'loadProgress') {
                 const progress = Math.floor(data.loadFraction * 100);
                 setLoadingState(prev => ({
@@ -81,11 +85,6 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
 
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  useEffect(() => {
-    const usernameFromData = window.nuiHandoverData?.name || 'Player';
-    setUsername(usernameFromData);
   }, []);
 
 
