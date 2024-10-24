@@ -5,11 +5,9 @@ import { Slider } from './ui/slider';
 import { Progress } from './ui/progress';
 import { Volume2, VolumeX, Play, Pause } from 'lucide-react';
 import { LiveAudioVisualizer } from 'react-audio-visualize';
-// Import assets using Vite's asset handling
 import song1 from '/assets/song1.mp3';
 import song2 from '/assets/song2.mp3';
 import song3 from '/assets/song3.mp3';
-
 import logo from '/assets/tmf.svg';
 import tmf2Logo from '/assets/tmf2.svg';
 import rectangle218 from '/assets/Rectangle218.svg';
@@ -45,9 +43,6 @@ interface LoadingState {
   isVisible: boolean;
 }
 
-// Check if we're in FiveM's CEF environment
-// const isFiveM = !!(window as any).invokeNative;
-
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
   const [audioState, setAudioState] = useState<AudioState>({
     playing: false,
@@ -64,8 +59,6 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
   
   const [username, setUsername] = useState<string>('Player');
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  // const audioContextRef = useRef<AudioContext | null>(null);
-  // const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
@@ -173,15 +166,6 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
       });
     }
   }, [loadingState.isVisible]);
-  
-  useEffect(() => {
-    // Focus the input after the component mounts
-    const timer = setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <div
@@ -194,7 +178,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
           }
         }}
       >
-      {/* Your existing JSX structure */}
+        
       <div className="absolute inset-0">
         <img src={imageBackground} alt="Background" className="absolute w-full h-full object-cover" />
       </div>
