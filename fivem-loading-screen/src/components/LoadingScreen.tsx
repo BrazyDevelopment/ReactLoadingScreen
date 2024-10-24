@@ -1,5 +1,3 @@
-// My Loading Screen content
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Slider } from './ui/slider';
 import { Progress } from './ui/progress';
@@ -178,7 +176,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
           }
         }}
       >
-        
+
       <div className="absolute inset-0">
         <img src={imageBackground} alt="Background" className="absolute w-full h-full object-cover" />
       </div>
