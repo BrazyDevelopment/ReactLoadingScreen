@@ -22,8 +22,6 @@ import rectangle1353 from '/assets/Rectangle1353.svg';
 import nextSongIcon from '/assets/nextsong.svg';
 import imageBackground from '/assets/background-image.png';
 
-
-
 const SONGS = [song1, song2, song3];
 interface LoadingScreenProps {
   onLoadComplete?: () => void;
@@ -49,10 +47,6 @@ interface ButtonData {
 }
 
 const SocialButtons: React.FC = () => {
-  const openInNewWindow = (url: string): void => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
   const buttons: ButtonData[] = [
     {
       url: 'https://discord.gg/tmfrz',
@@ -74,18 +68,19 @@ const SocialButtons: React.FC = () => {
     <div className="flex flex-col items-start">
       <div className="flex flex-row space-x-4 mt-4 -mb-20">
         {buttons.map((button: ButtonData, index: number) => (
-          <button
+          <a 
             key={index}
-            type="button"
-            onClick={() => openInNewWindow(button.url)}
-            className="z-[9999]"
+            href={button.url} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="z-[9999] block"
           >
             <img 
               src={button.icon} 
               alt={button.alt} 
-              className="w-20 h-20"
+              className="w-20 h-20 cursor-pointer"
             />
-          </button>
+          </a>
         ))}
       </div>
     </div>
@@ -196,15 +191,15 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
     const newMediaRecorder = new MediaRecorder(mediaStreamDestination.stream);
     setMediaRecorder(newMediaRecorder);
   
-    newMediaRecorder.ondataavailable = (event) => {
-      console.log(event.data);
-    };
-    newMediaRecorder.onstart = () => {
-      console.log("Recording started");
-    };
-    newMediaRecorder.onstop = () => {
-      console.log("Recording stopped");
-    };
+    // newMediaRecorder.ondataavailable = (event) => {
+    //   // console.log(event.data);
+    // };
+    // newMediaRecorder.onstart = () => {
+    //   // console.log("Recording started");
+    // };
+    // newMediaRecorder.onstop = () => {
+    //   // console.log("Recording stopped");
+    // };
   
     newMediaRecorder.start();
   };

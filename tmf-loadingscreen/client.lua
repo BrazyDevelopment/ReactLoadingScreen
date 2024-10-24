@@ -5,7 +5,6 @@ local function registerLoadingscreenShutdown()
 
     ShutdownLoadingScreen()
     ShutdownLoadingScreenNui()
-    print("tmf-loadingscreen", "Loading screen has been shutdown")
 end
 
 RegisterNUICallback('loadingScreenDone', function(data, cb)
