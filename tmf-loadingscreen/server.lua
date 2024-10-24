@@ -9,7 +9,6 @@ AddEventHandler('playerConnecting', function(playerName, setKickReason, deferral
 
     print("Player Connecting", "Player name: " .. (playerName or 'Player'))
 
-    -- Additional checks (if necessary)
     if not playerName then
         deferrals.done("Invalid player name.")
         return

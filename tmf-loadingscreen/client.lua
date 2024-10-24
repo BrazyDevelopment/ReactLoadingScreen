@@ -5,7 +5,7 @@ local function registerLoadingscreenShutdown()
 
     ShutdownLoadingScreen()
     ShutdownLoadingScreenNui()
-    logger:Info("Loadingscreen", "Loading screen has been shutdown")
+    print("tmf-loadingscreen", "Loading screen has been shutdown")
 end
 
 RegisterNUICallback('loadingScreenDone', function(data, cb)
@@ -27,8 +27,11 @@ end)
 
 RegisterNetEvent('sendPlayerName')
 AddEventHandler('sendPlayerName', function(playerName)
+    print('Received player name:', playerName)
+    SetNuiFocus(true, true)
     SendNUIMessage({
         type = "setPlayerName",
         name = playerName
     })
 end)
+
