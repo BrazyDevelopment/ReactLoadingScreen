@@ -15,3 +15,10 @@ AddEventHandler('endInitFunction', function()
     ShutdownLoadingScreenNui() 
     SetNuiFocus(false, false)   
 end)
+
+AddEventHandler('playerConnecting', function(_, _, deferrals)
+    local source = source
+    deferrals.handover({
+        name = GetPlayerName(source)  -- Send the player's name
+    })
+end)

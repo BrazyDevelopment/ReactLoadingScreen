@@ -15,6 +15,11 @@
   }
   
   
-  
+  interface Window {
+    nuiHandoverData: {
+      name: string;
+      serverAddress?: string;
+    };
+  }
 
   declare function GetParentResourceName(): string;

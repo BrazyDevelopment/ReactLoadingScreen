@@ -81,8 +81,12 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
 
         window.addEventListener('message', handleMessage);
         return () => window.removeEventListener('message', handleMessage);
-}, []);
+  }, []);
 
+  useEffect(() => {
+    const usernameFromData = window.nuiHandoverData?.name || 'Player';
+    setUsername(usernameFromData);
+  }, []);
 
 
   const getLoadingStage = (progress: number): string => {
