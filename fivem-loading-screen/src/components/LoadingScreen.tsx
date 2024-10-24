@@ -43,7 +43,7 @@ interface LoadingState {
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
   const [audioState, setAudioState] = useState<AudioState>({
-    playing: false,
+    playing: true,
     currentSong: 0,
     volume: 50,
     isMuted: false,
