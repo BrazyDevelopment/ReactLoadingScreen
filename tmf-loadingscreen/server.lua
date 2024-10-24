@@ -2,11 +2,20 @@ AddEventHandler('playerConnecting', function(playerName, setKickReason, deferral
     local source = source
     
     deferrals.defer()
+    print("Deferrals started for: " .. (playerName or 'Player'))
 
     -- mandatory wait!
     Wait(0)
 
-    logger:Info("Player Connecting", "Player name: " .. (playerName or 'Player'))
+    print("Player Connecting", "Player name: " .. (playerName or 'Player'))
+
+    -- Additional checks (if necessary)
+    if not playerName then
+        deferrals.done("Invalid player name.")
+        return
+    end
+
+    print("Deferrals done for: " .. (playerName or 'Player'))
     deferrals.done()
     
     TriggerClientEvent('sendPlayerName', source, playerName)

@@ -43,50 +43,48 @@ interface LoadingState {
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
   const [audioState, setAudioState] = useState<AudioState>({
-    playing: true,
+    playing: false,
     currentSong: 0,
     volume: 50,
     isMuted: false,
   });
-  
+
   const [loadingState, setLoadingState] = useState<LoadingState>({
     progress: 0,
     stage: 'Initializing...',
     isVisible: true,
   });
-  
+
   const [username, setUsername] = useState<string>('Player');
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
   
-  // FiveM specific handlers
   useEffect(() => {
-        const handleMessage = (event: MessageEvent) => {
-            const data = event.data;
+    const handleMessage = (event: MessageEvent) => {
+      const data = event.data;
 
-            if (data.type === 'setPlayerName') {
-              setUsername(data.name);
-            }
+      if (data.type === 'setPlayerName') {
+        setUsername(data.name);
+      }
 
-            if (data.eventName === 'loadProgress') {
-                const progress = Math.floor(data.loadFraction * 100);
-                setLoadingState(prev => ({
-                    ...prev,
-                    progress,
-                    stage: getLoadingStage(progress)
-                }));
-            }
+      if (data.eventName === 'loadProgress') {
+        const progress = Math.floor(data.loadFraction * 100);
+        setLoadingState(prev => ({
+          ...prev,
+          progress,
+          stage: getLoadingStage(progress)
+        }));
+      }
 
-            if (data.type === 'loadingComplete') {
-                handleLoadingComplete();
-            }
-        };
+      if (data.type === 'loadingComplete') {
+        handleLoadingComplete();
+      }
+    };
 
-        window.addEventListener('message', handleMessage);
-        return () => window.removeEventListener('message', handleMessage);
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
   }, []);
-
 
   const getLoadingStage = (progress: number): string => {
     if (progress < 20) return 'Initializing...';
@@ -94,27 +92,76 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
     if (progress < 60) return 'Establishing Connection...';
     if (progress < 80) return 'Loading World...';
     return 'Finalizing...';
-};
+  };
 
   const handleLoadingComplete = () => {
-
     console.log("Loading complete!");
     setLoadingState(prev => ({ ...prev, isVisible: false }));
 
-    // Notify FiveM that loading is complete
-        fetch('nui://tmf-loadingscreen/loadingScreenDone', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ loaded: true })
-        })
-        .then(() => {
-            onLoadComplete?.();
-        })
-        .catch(console.error);
+    fetch('nui://tmf-loadingscreen/loadingScreenDone', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ loaded: true })
+    })
+      .then(() => {
+        onLoadComplete?.();
+      })
+      .catch(console.error);
+  };
+
+  const cleanupAudio = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setMediaRecorder(null); // Reset mediaRecorder reference
+    }
+  
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null; // Reset reference
+    }
+  
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null; // Reset reference
+    }
+  };
+  
+  const playSong = (songUrl: string) => {
+    cleanupAudio(); // Clean up any existing audio
+  
+    // Create a new audio element
+    audioRef.current = new Audio(songUrl);
+    audioContextRef.current = new AudioContext();
+    const sourceNode = audioContextRef.current.createMediaElementSource(audioRef.current);
+    const mediaStreamDestination = audioContextRef.current.createMediaStreamDestination();
+  
+    // Connect the source node to the media stream destination
+    sourceNode.connect(mediaStreamDestination);
+    sourceNode.connect(audioContextRef.current.destination);
+  
+    audioRef.current.volume = audioState.volume / 100;
+    audioRef.current.loop = true;
+    audioRef.current.play().catch((error) => console.error("Playback failed:", error));
+  
+    // Create and start MediaRecorder
+    const newMediaRecorder = new MediaRecorder(mediaStreamDestination.stream);
+    setMediaRecorder(newMediaRecorder);
+  
+    newMediaRecorder.ondataavailable = (event) => {
+      console.log(event.data);
+    };
+    newMediaRecorder.onstart = () => {
+      console.log("Recording started");
+    };
+    newMediaRecorder.onstop = () => {
+      console.log("Recording stopped");
+    };
+  
+    newMediaRecorder.start();
   };
 
 
-  // audio handlers
   const handleVolumeChange = (newVolume: number[]) => {
     const volumeValue = newVolume[0];
     setAudioState(prev => ({
@@ -128,14 +175,23 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
     }
   };
 
-  const toggleAudio = () => setAudioState(prev => ({ ...prev, playing: !prev.playing }));
+  const toggleAudio = () => {
+    if (audioState.playing) {
+      cleanupAudio();
+    } else {
+      playSong(SONGS[audioState.currentSong]);
+    }
+    setAudioState(prev => ({ ...prev, playing: !prev.playing }));
+  };
 
   const changeSong = (direction: 'next' | 'prev') => {
+    const newIndex = (audioState.currentSong + (direction === 'next' ? 1 : -1) + SONGS.length) % SONGS.length;
     setAudioState(prev => ({
       ...prev,
-      currentSong: (prev.currentSong + (direction === 'next' ? 1 : -1) + SONGS.length) % SONGS.length,
+      currentSong: newIndex,
       playing: true,
     }));
+    playSong(SONGS[newIndex]);
   };
 
   const toggleMute = () => {
@@ -154,11 +210,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
 
   useEffect(() => {
     if (!loadingState.isVisible) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-  
+      cleanupAudio(); // Clean up audio when loading is complete
       setAudioState({
         playing: false,
         currentSong: 0,
@@ -170,16 +222,13 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
 
   return (
     <div
-        className={`text-neutral-content relative h-screen w-screen overflow-hidden bg-black transition-opacity duration-1000 ${
-          loadingState.isVisible ? 'visible' : 'hidden'
-        }`}
-        onTransitionEnd={() => {
-          if (!loadingState.isVisible) {
-            handleLoadingComplete();
-          }
-        }}
-      >
-
+      className={`text-neutral-content relative h-screen w-screen overflow-hidden bg-black transition-opacity duration-1000 ${loadingState.isVisible ? 'visible' : 'hidden'}`}
+      onTransitionEnd={() => {
+        if (!loadingState.isVisible) {
+          handleLoadingComplete();
+        }
+      }}
+    >
       <div className="absolute inset-0">
         <img src={imageBackground} alt="Background" className="absolute w-full h-full object-cover" />
       </div>
@@ -204,15 +253,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
         />
       </div>
 
-      <audio
-        ref={audioRef}
-        src={SONGS[audioState.currentSong]}
-        onEnded={() => changeSong('next')}
-        loop
-        autoPlay
-        hidden
-      />
-       <input ref={inputRef} type="text" className="hidden" />
+      {/* <input ref={inputRef} type="text" className="hidden" /> */}
     </div>
   );
 };
@@ -312,7 +353,7 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ audioState, mediaRecorder, onToggleAudio, onChangeSong, loadingProgress, loadingStage }) => (
   <>
     <div className="w-full flex flex-col items-center justify-center">
-      {mediaRecorder && mediaRecorder.state === 'recording' && (
+      {mediaRecorder && (
         <div style={{ border: 'none', padding: '10px', display: 'flex', justifyContent: 'center', width: '100%' }}>
           <LiveAudioVisualizer
             mediaRecorder={mediaRecorder}
@@ -326,7 +367,7 @@ const Footer: React.FC<FooterProps> = ({ audioState, mediaRecorder, onToggleAudi
         </div>
       )}
     </div>
-    <div className="flex justify-center mt-4">
+    <div className="flex justify-center mt-4 space-x-2">
       <button type="button" onClick={() => onChangeSong('prev')}>
         <img src={previousIcon} alt="Previous" />
       </button>

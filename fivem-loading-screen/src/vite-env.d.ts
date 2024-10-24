@@ -22,4 +22,8 @@
     };
   }
 
+  interface HTMLAudioElement {
+    captureStream(): MediaStream;
+  }
+
   declare function GetParentResourceName(): string;
