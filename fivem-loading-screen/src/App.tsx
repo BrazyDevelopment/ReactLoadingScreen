@@ -1,17 +1,13 @@
-// src/App.tsx
+import "./App.css";
+import React from "react";
+import LoadingScreen from "./components/LoadingScreen";
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import LoadingScreen from './components/LoadingScreen';
-
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(<App />);
-
-function App() {
+const App: React.FC = () => {
   return (
-    <React.StrictMode>
+    <div>
       <LoadingScreen />
-    </React.StrictMode>
+    </div>
   );
-}
+};
 
 export default App;

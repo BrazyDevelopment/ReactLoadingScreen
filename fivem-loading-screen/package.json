@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
     "preview": "vite preview",
+    "devgame": "vite build --watch",
     "deploy": "npm run build && xcopy /s /y public\\assets ..\\tmf-loadingscreen\\web\\assets\\"
   },
   "dependencies": {

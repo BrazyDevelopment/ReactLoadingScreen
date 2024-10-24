@@ -46,7 +46,7 @@ interface LoadingState {
 }
 
 // Check if we're in FiveM's CEF environment
-const isFiveM = !!(window as any).invokeNative;
+// const isFiveM = !!(window as any).invokeNative;
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
   const [audioState, setAudioState] = useState<AudioState>({
@@ -64,88 +64,63 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
   
   const [username, setUsername] = useState<string>('Player');
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  // const audioContextRef = useRef<AudioContext | null>(null);
+  // const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-
+  const inputRef = useRef<HTMLInputElement>(null);
+  
   // FiveM specific handlers
   useEffect(() => {
-    if (isFiveM) {
-      const handleMessage = (event: MessageEvent) => {
-        const data = event.data;
+        const handleMessage = (event: MessageEvent) => {
+            const data = event.data;
 
-        if (data.eventName === 'loadProgress') {
-          const progress = Math.floor(data.loadFraction * 100);
-          setLoadingState(prev => ({
-            ...prev,
-            progress,
-            stage: getLoadingStage(progress)
-          }));
-        }
+            if (data.eventName === 'loadProgress') {
+                const progress = Math.floor(data.loadFraction * 100);
+                setLoadingState(prev => ({
+                    ...prev,
+                    progress,
+                    stage: getLoadingStage(progress)
+                }));
+            }
 
-        // Handle shutdown message from FiveM
+            if (data.type === 'loadingComplete') {
+                handleLoadingComplete();
+            }
+        };
 
-        if (data.type === 'loadingComplete') {
-          handleLoadingComplete();
-        }
-      };
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+}, []);
 
-      window.addEventListener('message', handleMessage);
-      return () => window.removeEventListener('message', handleMessage);
-    } else {
-      // Dev environment simulation
-      simulateLoading();
-    }
-  }, []);
 
-  // Simulate loading in dev environment
-  const simulateLoading = () => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 10;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        handleLoadingComplete();
-      }
-      setLoadingState(prev => ({
-        ...prev,
-        progress: Math.min(Math.floor(progress), 100),
-        stage: getLoadingStage(progress)
-      }));
-    }, 1000);
-  };
 
   const getLoadingStage = (progress: number): string => {
-    if (progress < 25) return 'Initializing...';
-    if (progress < 50) return 'Loading Game Files...';
-    if (progress < 75) return 'Establishing Connection...';
-    if (progress < 90) return 'Loading World...';
+    if (progress < 20) return 'Initializing...';
+    if (progress < 40) return 'Loading Game Files...';
+    if (progress < 60) return 'Establishing Connection...';
+    if (progress < 80) return 'Loading World...';
     return 'Finalizing...';
-  };
+};
 
   const handleLoadingComplete = () => {
+
+    console.log("Loading complete!");
     setLoadingState(prev => ({ ...prev, isVisible: false }));
 
     // Notify FiveM that loading is complete
-    if (isFiveM) {
         fetch('nui://tmf-loadingscreen/loadingScreenDone', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ loaded: true })
         })
         .then(() => {
-            // Optionally trigger a callback or further actions here
             onLoadComplete?.();
         })
         .catch(console.error);
-    } else {
-        onLoadComplete?.();
-    }
-};
+  };
 
 
-  // Your existing audio handlers
+  // audio handlers
   const handleVolumeChange = (newVolume: number[]) => {
     const volumeValue = newVolume[0];
     setAudioState(prev => ({
@@ -183,31 +158,42 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
     });
   };
 
-  if (!loadingState.isVisible) {
-
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0; // Reset to the beginning
+  useEffect(() => {
+    if (!loadingState.isVisible) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+  
+      setAudioState({
+        playing: false,
+        currentSong: 0,
+        volume: 50,
+        isMuted: false,
+      });
     }
+  }, [loadingState.isVisible]);
+  
+  useEffect(() => {
+    // Focus the input after the component mounts
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
 
-    setAudioState(prev => ({
-      ...prev,
-      playing: false,
-      currentSong: 0,
-      volume: 50,
-      isMuted: false,
-    }));
-
-    return null;
-  }
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div
-      className={`text-neutral-content relative h-screen w-screen overflow-hidden bg-black transition-opacity duration-1000 ${
-        loadingState.isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-      onTransitionEnd={() => !loadingState.isVisible && handleLoadingComplete()}
-    >
+        className={`text-neutral-content relative h-screen w-screen overflow-hidden bg-black transition-opacity duration-1000 ${
+          loadingState.isVisible ? 'visible' : 'hidden'
+        }`}
+        onTransitionEnd={() => {
+          if (!loadingState.isVisible) {
+            handleLoadingComplete();
+          }
+        }}
+      >
       {/* Your existing JSX structure */}
       <div className="absolute inset-0">
         <img src={imageBackground} alt="Background" className="absolute w-full h-full object-cover" />
@@ -241,6 +227,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
         autoPlay
         hidden
       />
+       <input ref={inputRef} type="text" className="hidden" />
     </div>
   );
 };
