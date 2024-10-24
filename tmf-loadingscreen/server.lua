@@ -1,8 +1,12 @@
-AddEventHandler('playerConnecting', function(_, _, deferrals)
+AddEventHandler('playerConnecting', function(playerName, setKickReason, deferrals)
     local source = source
-    local playerName = GetPlayerName(source) or 'Player'
     
-    logger:Info("Player Connecting", "Player name: " .. playerName)
+    deferrals.defer()
+
+    -- mandatory wait!
+    Wait(0)
+
+    logger:Info("Player Connecting", "Player name: " .. (playerName or 'Player'))
     deferrals.done()
     
     TriggerClientEvent('sendPlayerName', source, playerName)
