@@ -14,13 +14,11 @@ import ellipse9 from '/assets/Ellipse9.svg';
 import rectangle212 from '/assets/Rectangle212.svg';
 import playIcon from '/assets/PlayIcon.svg';
 import group39 from '/assets/Group39.svg';
-import discordIcon from '/assets/discord.svg';
-import tiktokIcon from '/assets/tiktok.svg';
-import storeIcon from '/assets/store.svg';
 import previousIcon from '/assets/previous.svg';
 import rectangle1353 from '/assets/Rectangle1353.svg';
 import nextSongIcon from '/assets/nextsong.svg';
 import imageBackground from '/assets/background-image.png';
+import SocialButtons from './ui/social-buttons';
 
 const SONGS = [song1, song2, song3];
 interface LoadingScreenProps {
@@ -39,53 +37,6 @@ interface LoadingState {
   stage: string;
   isVisible: boolean;
 }
-
-interface ButtonData {
-  url: string;
-  icon: string;
-  alt: string;
-}
-
-const SocialButtons: React.FC = () => {
-  const buttons: ButtonData[] = [
-    {
-      url: 'https://discord.gg/tmfrz',
-      icon: discordIcon,
-      alt: 'Discord'
-    },
-    {
-      url: 'https://tiktok.com/@tmfrz',
-      icon: tiktokIcon,
-      alt: 'TikTok'
-    },
-    {
-      url: 'https://tmfrz.tebex.io',
-      icon: storeIcon,
-      alt: 'Store'
-    }
-  ];
-  return (
-    <div className="flex flex-col items-start">
-      <div className="flex flex-row space-x-4 mt-4 -mb-20">
-        {buttons.map((button: ButtonData, index: number) => (
-          <a 
-            key={index}
-            href={button.url} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="z-[9999] block"
-          >
-            <img 
-              src={button.icon} 
-              alt={button.alt} 
-              className="w-20 h-20 cursor-pointer"
-            />
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
   const [audioState, setAudioState] = useState<AudioState>({
